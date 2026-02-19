@@ -1,43 +1,85 @@
 import re
+import base64
 
-# ---------- Injection Behaviour Detection ----------
-def detect_injection_patterns(prompt):
-    prompt_lower = prompt.lower()
-    reasons = []
+# -----------------------------
+# 1. Prompt Injection Detection
+# -----------------------------
+def detect_prompt_injection(prompt):
+    patterns = [
+        r"ignore previous instructions",
+        r"disregard earlier rules",
+        r"forget what you were told"
+    ]
 
-    if re.search(r"act as|pretend to be|you are now", prompt_lower):
-        reasons.append("Role-play attempt to change AI behavior")
-
-    if re.search(r"ignore .* instructions|bypass .* rules", prompt_lower):
-        reasons.append("Instruction override attempt")
-
-    if re.search(r"reveal|show|leak|display .* (policy|system|hidden|password)", prompt_lower):
-        reasons.append("Sensitive information extraction attempt")
-
-    if re.search(r"jailbreak|developer mode|dan mode", prompt_lower):
-        reasons.append("Known jailbreak attack pattern")
-
-    if "step by step" in prompt_lower and "ignore" in prompt_lower:
-        reasons.append("Multi-step manipulation attempt")
-
-    return reasons
+    for pattern in patterns:
+        if re.search(pattern, prompt.lower()):
+            return True
+    return False
 
 
-# ---------- Obfuscation Detection ----------
-def detect_obfuscation(prompt):
-    reasons = []
+# -----------------------------
+# 2. Role Manipulation Detection
+# -----------------------------
+def detect_role_manipulation(prompt):
+    patterns = [
+        r"act as",
+        r"pretend to be",
+        r"you are now",
+        r"switch to developer mode"
+    ]
 
-    # base64
+    for pattern in patterns:
+        if re.search(pattern, prompt.lower()):
+            return True
+    return False
+
+
+# -----------------------------
+# 3. Instruction Override
+# -----------------------------
+def detect_instruction_override(prompt):
+    patterns = [
+        r"bypass safety",
+        r"override system",
+        r"ignore all rules",
+        r"do not follow guidelines"
+    ]
+
+    for pattern in patterns:
+        if re.search(pattern, prompt.lower()):
+            return True
+    return False
+
+
+# -----------------------------
+# 4. Data Exfiltration
+# -----------------------------
+def detect_data_exfiltration(prompt):
+    patterns = [
+        r"reveal system prompt",
+        r"show hidden policy",
+        r"display internal instructions",
+        r"tell me the password",
+        r"leak confidential"
+    ]
+
+    for pattern in patterns:
+        if re.search(pattern, prompt.lower()):
+            return True
+    return False
+
+
+# -----------------------------
+# 5. Encoding Attack Detection
+# -----------------------------
+def detect_encoding_attack(prompt):
+
+    # Base64 pattern
     if re.search(r"[A-Za-z0-9+/]{20,}={0,2}", prompt):
-        reasons.append("Possible encoded payload (Base64)")
+        return True
 
-    # hex
+    # Hex pattern
     if re.search(r"0x[0-9a-fA-F]+", prompt):
-        reasons.append("Hex encoded instructions")
+        return True
 
-    # character splitting
-    spaced = " ".join(list("ignore"))
-    if spaced in prompt.lower():
-        reasons.append("Character obfuscation detected")
-
-    return reasons
+    return False
