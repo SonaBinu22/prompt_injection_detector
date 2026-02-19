@@ -4,12 +4,11 @@ from pydantic import BaseModel
 import pickle
 
 from preprocess import clean_text
-from rules import rule_check
-from detectors import detect_injection_patterns, detect_obfuscation
+from detectors import detect_all_attacks
 
 app = FastAPI(title="Prompt Injection Detector")
 
-# CORS (allow website to connect)
+# Enable CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -18,9 +17,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# load ML model
+# Load ML model
 model = pickle.load(open("model.pkl", "rb"))
 vectorizer = pickle.load(open("vectorizer.pkl", "rb"))
+
 
 class PromptRequest(BaseModel):
     prompt: str
@@ -34,12 +34,51 @@ def label_to_text(label):
     }[label]
 
 
-def generate_explanation(classification, reasons):
-    if classification == "Malicious":
-        return "The prompt shows clear signs of prompt injection: " + ", ".join(reasons)
-    if classification == "Suspicious":
-        return "The prompt contains potentially unsafe patterns: " + ", ".join(reasons)
-    return "No injection patterns detected. Prompt appears safe."
+# -----------------------------
+# Explanation Generator
+# -----------------------------
+def generate_security_explanation(attack_type):
+
+    explanations = {
+        "Prompt Injection":
+            "The prompt attempts to override previously defined instructions. "
+            "This is a known prompt injection technique used to manipulate AI behavior.",
+
+        "Role Manipulation":
+            "The prompt tries to change the system's assigned role. "
+            "This may allow bypassing normal security restrictions.",
+
+        "Instruction Override":
+            "The prompt explicitly attempts to bypass system-level safety rules. "
+            "This indicates malicious intent.",
+
+        "Data Exfiltration":
+            "The prompt attempts to extract hidden or confidential system information. "
+            "This is classified as a data exfiltration attack.",
+
+        "Encoding Attack":
+            "The prompt contains encoded or obfuscated content, "
+            "which is often used to hide malicious instructions."
+    }
+
+    return explanations.get(
+        attack_type,
+        "The prompt contains suspicious patterns."
+    )
+
+
+def get_risk_level(attack_type):
+
+    high_risk = ["Prompt Injection", "Data Exfiltration", "Instruction Override"]
+    medium_risk = ["Role Manipulation", "Encoding Attack"]
+
+    if attack_type in high_risk:
+        return "High"
+
+    if attack_type in medium_risk:
+        return "Medium"
+
+    return "Low"
 
 
 @app.post("/analyze")
@@ -48,35 +87,20 @@ def analyze_prompt(data: PromptRequest):
     if not data.prompt.strip():
         return {"error": "Prompt cannot be empty"}
 
-    # ---------- Layer 1: direct rules ----------
-    rule_label, rule_reason = rule_check(data.prompt)
-    if rule_label:
-        return {
-            "classification": rule_label,
-            "explanation": rule_reason,
-            "source": "Rule-Based Protection"
-        }
+    # 1️⃣ RULE-BASED DETECTION
+    attack_type = detect_all_attacks(data.prompt)
 
-    # ---------- Layer 2: behavioral detection ----------
-    reasons = []
-    reasons += detect_injection_patterns(data.prompt)
-    reasons += detect_obfuscation(data.prompt)
-
-    if len(reasons) >= 2:
+    if attack_type:
         return {
             "classification": "Malicious",
-            "explanation": generate_explanation("Malicious", reasons),
-            "source": "Security Pattern Analyzer"
+            "attack_type": attack_type,
+            "risk_level": get_risk_level(attack_type),
+            "confidence": "High",
+            "explanation": generate_security_explanation(attack_type),
+            "source": "Rule-Based Security Engine"
         }
 
-    if len(reasons) == 1:
-        return {
-            "classification": "Suspicious",
-            "explanation": generate_explanation("Suspicious", reasons),
-            "source": "Security Pattern Analyzer"
-        }
-
-    # ---------- Layer 3: ML model ----------
+    # 2️⃣ MACHINE LEARNING DETECTION
     cleaned = clean_text(data.prompt)
     vector = vectorizer.transform([cleaned])
     prediction = model.predict(vector)[0]
@@ -85,6 +109,9 @@ def analyze_prompt(data: PromptRequest):
 
     return {
         "classification": classification,
-        "explanation": generate_explanation(classification, []),
+        "attack_type": "None",
+        "risk_level": "Low",
+        "confidence": "ML-Based",
+        "explanation": "No explicit injection patterns detected. Classified using semantic machine learning analysis.",
         "source": "Machine Learning Model"
     }
