@@ -82,3 +82,26 @@ def detect_encoding_attack(prompt):
         return True
 
     return False
+
+
+# -----------------------------
+# MASTER DETECTOR FUNCTION
+# -----------------------------
+def detect_all_attacks(prompt):
+
+    if detect_prompt_injection(prompt):
+        return "Prompt Injection"
+
+    if detect_role_manipulation(prompt):
+        return "Role Manipulation"
+
+    if detect_instruction_override(prompt):
+        return "Instruction Override"
+
+    if detect_data_exfiltration(prompt):
+        return "Data Exfiltration"
+
+    if detect_encoding_attack(prompt):
+        return "Encoding Attack"
+
+    return None
