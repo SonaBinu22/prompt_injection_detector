@@ -1,10 +1,12 @@
 import { useState, useCallback } from "react";
-import { Shield, Send, Trash2, Zap, History } from "lucide-react";
+import { Shield, Send, Trash2, Zap, History, Lock, Eye, Brain } from "lucide-react";
 import { analyzePrompt } from "@/lib/detection-engine";
 import type { DetectionResult, AnalysisStats } from "@/types/detection";
 import { AnalysisResult } from "@/components/AnalysisResult";
 import { HistoryPanel } from "@/components/HistoryPanel";
 import { StatsBar } from "@/components/StatsBar";
+import { AnimatedShield } from "@/components/AnimatedShield";
+import { ParticleField } from "@/components/ParticleField";
 
 const EXAMPLE_PROMPTS = [
   { label: "Safe prompt", text: "What is the capital of France?" },
@@ -54,12 +56,15 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Particle background */}
+      <ParticleField />
+
       {/* Scan line effect */}
-      <div className="fixed inset-0 pointer-events-none scan-line opacity-30" />
+      <div className="fixed inset-0 pointer-events-none scan-line opacity-20" />
 
       {/* Grid overlay */}
       <div
-        className="fixed inset-0 pointer-events-none opacity-[0.03]"
+        className="fixed inset-0 pointer-events-none opacity-[0.02]"
         style={{
           backgroundImage: `linear-gradient(hsl(var(--primary) / 0.3) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary) / 0.3) 1px, transparent 1px)`,
           backgroundSize: "40px 40px",
@@ -67,20 +72,27 @@ const Index = () => {
       />
 
       <div className="relative z-10 max-w-7xl mx-auto p-4 md:p-6 lg:p-8">
-        {/* Header */}
-        <header className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 rounded-lg bg-primary/10 border border-primary/20">
-              <Shield className="w-6 h-6 text-primary" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight text-foreground">
-                Prompt Injection Detector
-              </h1>
-              <p className="text-sm text-muted-foreground font-mono">
-                Real-time prompt analysis & classification system
-              </p>
-            </div>
+        {/* Hero Header */}
+        <header className="mb-10 text-center">
+          <AnimatedShield />
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground mt-6 mb-2">
+            Prompt Injection <span className="text-primary">Detector</span>
+          </h1>
+          <p className="text-sm text-muted-foreground font-mono max-w-lg mx-auto">
+            Real-time prompt analysis & classification system
+          </p>
+          {/* Feature pills */}
+          <div className="flex flex-wrap justify-center gap-3 mt-5">
+            {[
+              { icon: Lock, text: "Rule-Based Detection" },
+              { icon: Eye, text: "Pattern Analysis" },
+              { icon: Brain, text: "Risk Classification" },
+            ].map((f) => (
+              <div key={f.text} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-card/80 backdrop-blur-sm font-mono text-[11px] text-muted-foreground">
+                <f.icon className="w-3 h-3 text-primary" />
+                {f.text}
+              </div>
+            ))}
           </div>
         </header>
 
@@ -93,7 +105,7 @@ const Index = () => {
           {/* Main panel */}
           <div className="lg:col-span-2 space-y-6">
             {/* Input */}
-            <div className="rounded-xl border border-border bg-card p-5 space-y-4">
+            <div className="rounded-xl border border-border bg-card/80 backdrop-blur-sm p-5 space-y-4 card-glow transition-shadow duration-300">
               <h2 className="font-mono text-xs uppercase tracking-wider text-muted-foreground flex items-center gap-2">
                 <Zap className="w-3 h-3" /> Prompt Input
               </h2>
@@ -163,7 +175,7 @@ const Index = () => {
 
             {/* Analysis Result */}
             {currentResult && (
-              <div className="rounded-xl border border-border bg-card p-5">
+              <div className="rounded-xl border border-border bg-card/80 backdrop-blur-sm p-5 card-glow transition-shadow duration-300">
                 <h2 className="font-mono text-xs uppercase tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
                   <Shield className="w-3 h-3" /> Analysis Result
                 </h2>
@@ -173,7 +185,7 @@ const Index = () => {
           </div>
 
           {/* History sidebar */}
-          <div className="rounded-xl border border-border bg-card p-5">
+          <div className="rounded-xl border border-border bg-card/80 backdrop-blur-sm p-5 card-glow transition-shadow duration-300">
             <h2 className="font-mono text-xs uppercase tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
               <History className="w-3 h-3" /> Analysis History
             </h2>
