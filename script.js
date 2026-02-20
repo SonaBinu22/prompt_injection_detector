@@ -1,39 +1,52 @@
-
 async function analyzePrompt() {
 
-    const prompt = document.getElementById("prompt").value;
-    document.getElementById("loading").classList.remove("hidden");
-    document.getElementById("result").classList.add("hidden");
+    const prompt = document.getElementById("prompt").value.trim();
+    if (!prompt) return;
 
-    const response = await fetch("http://127.0.0.1:8000/analyze", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({prompt})
-    });
+    const resultBox = document.getElementById("result");
+    const spinner = document.getElementById("loading");
 
-    const data = await response.json();
+    // enter loading state WITHOUT removing layout
+    resultBox.classList.add("loading");
+    spinner.classList.add("active");
 
-    document.getElementById("loading").classList.add("hidden");
-    document.getElementById("result").classList.remove("hidden");
+    try {
+        const response = await fetch("http://127.0.0.1:8000/analyze", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({prompt})
+        });
 
-    document.getElementById("classification").innerText = data.classification;
-    document.getElementById("explanation").innerText = data.explanation;
-    document.getElementById("source").innerText = "Detected by: " + data.source;
+        const data = await response.json();
 
-    // Risk Meter
-    let riskBar = document.getElementById("riskBar");
+        // update content AFTER layout is stable
+        requestAnimationFrame(() => {
 
-    if(data.classification === "Non-Malicious") {
-        riskBar.style.width = "30%";
-        riskBar.style.background = "#22c55e";
-    }
-    else if(data.classification === "Suspicious") {
-        riskBar.style.width = "65%";
-        riskBar.style.background = "#f59e0b";
-    }
-    else {
-        riskBar.style.width = "100%";
-        riskBar.style.background = "#ef4444";
+            document.getElementById("classification").innerText = data.classification;
+            document.getElementById("explanation").innerText = data.explanation;
+            document.getElementById("source").innerText = "Detected by: " + data.source;
+
+            let riskBar = document.getElementById("riskBar");
+
+            if(data.classification === "Non-Malicious") {
+                riskBar.style.width = "30%";
+                riskBar.style.background = "#22c55e";
+            }
+            else if(data.classification === "Suspicious") {
+                riskBar.style.width = "65%";
+                riskBar.style.background = "#f59e0b";
+            }
+            else {
+                riskBar.style.width = "100%";
+                riskBar.style.background = "#ef4444";
+            }
+        });
+
+    } catch (error) {
+        console.error(error);
+    } finally {
+        resultBox.classList.remove("loading");
+        spinner.classList.remove("active");
     }
 }
 
