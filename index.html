@@ -1,1 +1,39 @@
 
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prompt Injection Detector</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>🛡 Prompt Injection Detection System</h1>
+    <p class="subtitle">Hybrid AI Security Analyzer for LLM Applications</p>
+
+    <textarea id="prompt" placeholder="Enter prompt to analyze..."></textarea>
+
+    <button onclick="analyzePrompt()">Analyze Prompt</button>
+
+    <div class="examples">
+        <h3>Try Example Attacks:</h3>
+        <button onclick="fillExample(1)">Jailbreak</button>
+        <button onclick="fillExample(2)">Data Extraction</button>
+        <button onclick="fillExample(3)">Safe Prompt</button>
+    </div>
+
+    <div id="loading" class="hidden">Analyzing...</div>
+
+    <div id="result" class="result hidden">
+        <h2 id="classification"></h2>
+        <div id="riskMeter">
+            <div id="riskBar"></div>
+        </div>
+        <p id="explanation"></p>
+        <small id="source"></small>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
