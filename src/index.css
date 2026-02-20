@@ -1,0 +1,141 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 220 20% 7%;
+    --foreground: 210 20% 92%;
+
+    --card: 220 18% 10%;
+    --card-foreground: 210 20% 92%;
+
+    --popover: 220 18% 10%;
+    --popover-foreground: 210 20% 92%;
+
+    --primary: 160 80% 45%;
+    --primary-foreground: 220 20% 7%;
+
+    --secondary: 220 16% 16%;
+    --secondary-foreground: 210 20% 80%;
+
+    --muted: 220 14% 14%;
+    --muted-foreground: 215 15% 55%;
+
+    --accent: 220 16% 18%;
+    --accent-foreground: 210 20% 92%;
+
+    --destructive: 0 72% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --warning: 38 92% 55%;
+    --warning-foreground: 38 100% 10%;
+
+    --safe: 160 80% 45%;
+    --safe-foreground: 160 80% 8%;
+
+    --suspicious: 38 92% 55%;
+    --suspicious-foreground: 38 100% 10%;
+
+    --malicious: 0 72% 55%;
+    --malicious-foreground: 0 0% 100%;
+
+    --border: 220 14% 18%;
+    --input: 220 14% 14%;
+    --ring: 160 80% 45%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 220 18% 10%;
+    --sidebar-foreground: 210 20% 92%;
+    --sidebar-primary: 160 80% 45%;
+    --sidebar-primary-foreground: 220 20% 7%;
+    --sidebar-accent: 220 16% 16%;
+    --sidebar-accent-foreground: 210 20% 92%;
+    --sidebar-border: 220 14% 18%;
+    --sidebar-ring: 160 80% 45%;
+
+    --glow-primary: 0 0 20px hsl(160 80% 45% / 0.15);
+    --glow-warning: 0 0 20px hsl(38 92% 55% / 0.15);
+    --glow-danger: 0 0 20px hsl(0 72% 55% / 0.15);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+@layer utilities {
+  .glow-safe {
+    box-shadow: var(--glow-primary);
+  }
+  .glow-warning {
+    box-shadow: var(--glow-warning);
+  }
+  .glow-danger {
+    box-shadow: var(--glow-danger);
+  }
+
+  .card-glow {
+    box-shadow: 0 0 0 1px hsl(var(--border)), 0 4px 24px -4px hsl(var(--primary) / 0.08);
+  }
+
+  .card-glow:hover {
+    box-shadow: 0 0 0 1px hsl(var(--primary) / 0.3), 0 4px 32px -4px hsl(var(--primary) / 0.15);
+  }
+
+  .scan-line {
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      hsl(160 80% 45% / 0.03) 50%,
+      transparent 100%
+    );
+    animation: scan 3s linear infinite;
+  }
+
+  @keyframes scan {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100%); }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  @keyframes fade-in-up {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-fade-in-up {
+    animation: fade-in-up 0.4s ease-out;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+
+  .animate-float {
+    animation: float 4s ease-in-out infinite;
+  }
+}
