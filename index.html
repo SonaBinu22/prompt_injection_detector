@@ -1,39 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- TODO: Set the document title to the name of your application -->
+    <title>Lovable App</title>
+    <meta name="description" content="Lovable Generated Project" />
+    <meta name="author" content="Lovable" />
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Prompt Injection Detector</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+    <!-- TODO: Update og:title to match your application name -->
+    <meta property="og:title" content="Lovable App" />
+    <meta property="og:description" content="Lovable Generated Project" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
 
-<div class="container">
-    <h1>🛡 Prompt Injection Detection System</h1>
-    <p class="subtitle">Hybrid AI Security Analyzer for LLM Applications</p>
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@Lovable" />
+    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+  </head>
 
-    <textarea id="prompt" placeholder="Enter prompt to analyze..."></textarea>
-
-    <button onclick="analyzePrompt()">Analyze Prompt</button>
-
-    <div class="examples">
-        <h3>Try Example Attacks:</h3>
-        <button onclick="fillExample(1)">Jailbreak</button>
-        <button onclick="fillExample(2)">Data Extraction</button>
-        <button onclick="fillExample(3)">Safe Prompt</button>
-    </div>
-
-    <div id="loading" class="hidden">Analyzing...</div>
-
-    <div id="result" class="result hidden">
-        <h2 id="classification"></h2>
-        <div id="riskMeter">
-            <div id="riskBar"></div>
-        </div>
-        <p id="explanation"></p>
-        <small id="source"></small>
-    </div>
-</div>
-
-<script src="script.js"></script>
-</body>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>
