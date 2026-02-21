@@ -36,12 +36,51 @@ const Index = () => {
     setIsAnalyzing(true);
 
     // Simulate processing delay
-    setTimeout(() => {
-      const result = analyzePrompt(prompt);
-      setResults((prev) => [result, ...prev]);
-      setCurrentResult(result);
-      setIsAnalyzing(false);
-    }, 600);
+    setTimeout(async () => {
+  try {
+  const data = await analyzePrompt(prompt);
+
+  const newResult: DetectionResult = {
+  id: crypto.randomUUID(),
+  originalPrompt: prompt,
+  normalizedPrompt: prompt.toLowerCase(),
+
+  riskLevel:
+    data.classification === "Malicious"
+      ? "malicious"
+      : data.classification === "Suspicious"
+      ? "suspicious"
+      : "safe",
+
+  score:
+    data.classification === "Malicious"
+      ? 90
+      : data.classification === "Suspicious"
+      ? 60
+      : 10,
+
+  triggeredRules: [],
+
+  timestamp: new Date(),
+
+  blocked: data.classification === "Malicious",
+
+  warningMessage: data.explanation,
+};
+
+  // REMOVE this line:
+  // setResults(newResult);
+
+  // Keep ONLY this:
+  setResults((prev) => [newResult, ...prev]);
+
+  setCurrentResult(newResult);
+} catch (err) {
+  console.error("API Error:", err);
+} finally {
+  setIsAnalyzing(false);
+}
+}, 600);
   }, [prompt]);
 
   const handleExampleClick = (text: string) => {
